@@ -1,0 +1,100 @@
+run:
+
+===== Employee Management Menu =====
+1. Display Employees
+2. Insert New Employee
+3. Update Employee Name
+4. Delete Employee
+5. Exit
+Enter your choice: 1
+
+Existing Employees:
+Employee No: 101, Employee Name: Alice
+Employee No: 102, Employee Name: Bob
+Employee No: 103, Employee Name: pqr
+
+===== Employee Management Menu =====
+1. Display Employees
+2. Insert New Employee
+3. Update Employee Name
+4. Delete Employee
+5. Exit
+Enter your choice: 2
+
+Enter new employee number: 104
+Enter new employee name: pict
+Record inserted successfully.
+
+===== Employee Management Menu =====
+1. Display Employees
+2. Insert New Employee
+3. Update Employee Name
+4. Delete Employee
+5. Exit
+Enter your choice: 1
+
+Existing Employees:
+Employee No: 101, Employee Name: Alice
+Employee No: 102, Employee Name: Bob
+Employee No: 103, Employee Name: pqr
+Employee No: 104, Employee Name: pict
+
+===== Employee Management Menu =====
+1. Display Employees
+2. Insert New Employee
+3. Update Employee Name
+4. Delete Employee
+5. Exit
+Enter your choice: 3
+
+Enter employee number to update: 104
+Enter new employee name: pict_ce
+Record updated successfully.
+
+===== Employee Management Menu =====
+1. Display Employees
+2. Insert New Employee
+3. Update Employee Name
+4. Delete Employee
+5. Exit
+Enter your choice: 1
+
+Existing Employees:
+Employee No: 101, Employee Name: Alice
+Employee No: 102, Employee Name: Bob
+Employee No: 103, Employee Name: pqr
+Employee No: 104, Employee Name: pict_ce
+
+===== Employee Management Menu =====
+1. Display Employees
+2. Insert New Employee
+3. Update Employee Name
+4. Delete Employee
+5. Exit
+Enter your choice: 4
+
+Enter employee number to delete: 104
+Record deleted successfully.
+
+===== Employee Management Menu =====
+1. Display Employees
+2. Insert New Employee
+3. Update Employee Name
+4. Delete Employee
+5. Exit
+Enter your choice: 1
+
+Existing Employees:
+Employee No: 101, Employee Name: Alice
+Employee No: 102, Employee Name: Bob
+Employee No: 103, Employee Name: pqr
+
+===== Employee Management Menu =====
+1. Display Employees
+2. Insert New Employee
+3. Update Employee Name
+4. Delete Employee
+5. Exit
+Enter your choice: 5
+Exiting program...
+BUILD SUCCESSFUL (total time: 2 minutes 3 seconds)
