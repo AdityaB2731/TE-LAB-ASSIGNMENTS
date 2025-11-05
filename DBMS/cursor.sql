@@ -1,76 +1,72 @@
-CREATE TABLE IF NOT EXISTS Student (
-    rolNo INT PRIMARY KEY,
-    nameSt VARCHAR(100) NOT NULL
+-- Step 1: Drop existing tables (optional cleanup)
+DROP TABLE IF EXISTS old_emp;
+DROP TABLE IF EXISTS new_emp;
+
+-- Step 2: Create tables
+CREATE TABLE old_emp (
+  emp_id INT,
+  emp_name VARCHAR(50),
+  city VARCHAR(50)
 );
 
-CREATE TABLE IF NOT EXISTS CopyStudent (
-    rolNoA INT PRIMARY KEY,
-    nameStA VARCHAR(100) NOT NULL
+CREATE TABLE new_emp (
+  emp_id INT,
+  emp_name VARCHAR(50),
+  city VARCHAR(50)
 );
 
-INSERT INTO
-    Student (rolNo, nameSt)
-VALUES (1, 'Alice'),
-    (2, 'Bob'),
-    (3, 'Charlie'),
-    (4, 'David'),
-    (5, 'Eve'),
-    (6, 'Fiona'),
-    (7, 'George'),
-    (8, 'Hannah'),
-    (9, 'Ian'),
-    (10, 'Jane');
+-- Step 3: Insert sample data
+INSERT INTO old_emp VALUES
+(1, 'Employee1', 'Pune'),
+(2, 'Employee2', 'Mumbai'),
+(3, 'Employee3', 'Bangalore');
 
-INSERT INTO
-    CopyStudent (rolNoA, nameStA)
-VALUES (1, 'Alice'),
-    (2, 'Bob');
+INSERT INTO new_emp VALUES
+(1, 'Employee1', 'Pune'),
+(2, 'Employee2', 'Mumbai'),
+(3, 'Employee3', 'Bangalore'),
+(4, 'Employee4', 'Delhi'),
+(5, 'Employee5', 'Chennai'),
+(6, 'Ved', 'Pune');
 
-TRUNCATE CopyStudent;
-DELIMITER;
+DELIMITER $$
 
-DROP PROCEDURE IF EXISTS CopyDetails;
-
-DELIMITER / /
-
-DELIMITER / /
-
-CREATE PROCEDURE CopyDetails()
+CREATE PROCEDURE merge_employees(IN city_param VARCHAR(50))
 BEGIN
-    DECLARE roll INT;
-    DECLARE nam VARCHAR(100);
-    DECLARE done INT DEFAULT 0;
+  DECLARE done INT DEFAULT 0;
+  DECLARE v_id INT;
+  DECLARE v_name VARCHAR(50);
+  DECLARE v_city VARCHAR(50);
 
-    DECLARE pointFirst CURSOR FOR 
-        SELECT rolNo, nameSt FROM Student;
+  DECLARE emp_cursor CURSOR FOR
+    SELECT emp_id, emp_name, city
+    FROM new_emp
+    WHERE city = city_param;  -- acts like parameterized cursor!
 
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
-    OPEN pointFirst;
+  OPEN emp_cursor;
 
-    readloop: LOOP
-        FETCH pointFirst INTO roll, nam;
-        IF done = 1 THEN
-            LEAVE readloop;
-        END IF;
+  read_loop: LOOP
+    FETCH emp_cursor INTO v_id, v_name, v_city;
+    IF done THEN
+      LEAVE read_loop;
+    END IF;
 
-        IF NOT EXISTS (SELECT 1 FROM CopyStudent WHERE rolNoA = roll) THEN
-            INSERT INTO CopyStudent (rolNoA, nameStA) VALUES (roll, nam);
-            SELECT "Data is Entered:- " AS Message,roll AS RollNo,nam AS NameOfStudent;
-        ELSE 
-            SELECT "Data Already exists.." AS Message;
-        END IF;
+    -- skip duplicates
+    IF NOT EXISTS (SELECT 1 FROM old_emp WHERE emp_id = v_id) THEN
+      INSERT INTO old_emp VALUES (v_id, v_name, v_city);
+    END IF;
 
-    END LOOP;
+  END LOOP;
 
-    CLOSE pointFirst;
-END //
+  CLOSE emp_cursor;
 
-DELIMITER;
+  SELECT 'Merge completed for city: ' AS Msg, city_param AS City;
 
-DELIMITER;
+END$$
+DELIMITER ;
 
-
-CALL CopyDetails;
-
-TRUNCATE CopyStudent;
+CALL merge_employees('Pune');
+CALL merge_employees('Chennai');
+CALL merge_employees('Delhi');
