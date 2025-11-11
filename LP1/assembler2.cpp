@@ -1,73 +1,97 @@
-#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <map>
-#include <vector>
+#include <iostream>
+#include <bits/stdc++.h>
 #include <iomanip>
 using namespace std;
-
-struct Symbol {
+struct symbol
+{
     int address;
     bool defined;
 };
-struct Literal {
+struct literal
+{
     string literal;
     int address;
 };
-
-int main() {
-    cout << "Running Pass 2..." << endl;
+int main()
+{
     ifstream inter("intermediate.txt"), symtab("symtab.txt"), littab("littab.txt");
-    if (!inter || !symtab || !littab) {
+    if (!inter || !symtab || !littab)
+    {
         cerr << "Error: Missing intermediate/symtab/littab files!" << endl;
         return 1;
     }
-    map<string, int> symbolTable;
-    vector<Literal> literalTable;
-    string sym;
+    map<string, int> symboltable;
+    vector<literal> literaltable;
+    string sym, lit;
     int addr;
     bool def;
     while (symtab >> sym >> addr >> def)
-        symbolTable[sym] = addr;
-    string lit;
+    {
+        symboltable[sym] = addr;
+    }
     while (littab >> lit >> addr)
-        literalTable.push_back({lit, addr});
-
+    {
+        literaltable.push_back({lit, addr});
+    }
     ofstream output("output.txt");
     string line;
-    while (getline(inter, line)) {
-        if (line.find("(AD,") != string::npos || line.find("(DL,01)") != string::npos)
-            continue; // skip assembler directives and DS
-        stringstream ss(line);
+    while (getline(inter, line))
+    {
+        if (line.find("(AD,)") != string::npos || line.find("(DL,01)") != string::npos)
+        {
+            continue;
+        }
         string token;
         vector<string> parts;
-        while (ss >> token) parts.push_back(token);
-        string machineCode = " ";
-        for (auto &t : parts) {
-            if (t.find("(IS,") != string::npos) {
-                machineCode += t.substr(4, 2) + " ";
-            } else if (t.find("AREG") != string::npos)
-                machineCode += "1 ";
+        stringstream ss(line);
+        while (ss >> token)
+        {
+            parts.push_back(token);
+        }
+        string machinecode = " ";
+        for (auto &t : parts)
+        {
+            if (t.find("(IS,") != string::npos)
+            {
+                machinecode += t.substr(4, 2)+ " ";
+            }
+            else if (t.find("AREG") != string::npos)
+            {
+                machinecode += "1 ";
+            }
             else if (t.find("BREG") != string::npos)
-                machineCode += "2 ";
+            {
+                machinecode += "2 ";
+            }
             else if (t.find("CREG") != string::npos)
-                machineCode += "3 ";
+            {
+                machinecode += "3 ";
+            }
             else if (t.find("DREG") != string::npos)
-                machineCode += "4 ";
-            else if (t.find("(S,") != string::npos) {
-                string symName = t.substr(3, t.size() - 4);
-                machineCode += to_string(symbolTable[symName]) + " ";
-            } else if (t.find("(L,") != string::npos) {
+            {
+                machinecode += "4 ";
+            }
+            else if (t.find("(S,") != string::npos)
+            {
+                string sym = t.substr(3, t.size() - 4);
+                machinecode += to_string(symboltable[sym]) + " ";
+            }
+            else if (t.find("L,") != string::npos)
+            {
                 int idx = stoi(t.substr(3, t.size() - 4));
-                machineCode += to_string(literalTable[idx - 1].address) + " ";
-            } else if (t.find("(C,") != string::npos) {
-                string val = t.substr(3, t.size() - 4);
-                machineCode += val + " ";
+                machinecode += to_string(literaltable[idx-1].address) + " ";
+            }
+            else if (t.find("C,") != string::npos)
+            {
+                string val = t.substr(3,t.size()-4);
+                machinecode +=val+" ";
             }
         }
-        output << machineCode << endl;
+        output<<machinecode<<endl;
     }
     output.close();
-    cout << "Pass 2 complete ✅\nOutput: output.txt generated successfully.\n";
+    cout<<"done"<<endl;
     return 0;
 }
